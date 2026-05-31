@@ -7,7 +7,9 @@ desktop.ini
 .env
 *.key
 credentials.*
-.opencode/
+.opencode/keys/
+.opencode/credentials*
+.opencode/*.env
 
 # Node.js
 node_modules/
