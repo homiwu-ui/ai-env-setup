@@ -16,6 +16,7 @@ __pycache__/
 *.pyc
 *.mp3
 *.wav
+_history/
 
 # Node.js
 node_modules/
