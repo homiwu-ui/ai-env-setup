@@ -17,6 +17,7 @@ __pycache__/
 *.mp3
 *.wav
 _history/
+_speak_queue.txt
 
 # Node.js
 node_modules/
