@@ -93,8 +93,22 @@ def _speak_sapi(text: str) -> None:
 
 
 def play_wake_sound() -> None:
+    import struct, math
+    sr = 44100
     duration = 0.15
-    t = np.linspace(0, duration, int(44100 * duration), False)
-    tone = 0.3 * np.sin(2 * np.pi * 880 * t)
-    sd.play(tone, samplerate=44100)
-    sd.wait()
+    freq = 880
+    frames = int(sr * duration)
+    data = b"".join(
+        struct.pack("<h", int(0.3 * 32767 * math.sin(2 * math.pi * freq * i / sr)))
+        for i in range(frames)
+    )
+    path = os.path.join(tempfile.gettempdir(), "_xiaoting_beep.wav")
+    with wave.open(path, "wb") as wf:
+        wf.setnchannels(1)
+        wf.setsampwidth(2)
+        wf.setframerate(sr)
+        wf.writeframes(data)
+    mci = ctypes.windll.winmm.mciSendStringW
+    mci(f'open "{path}" alias beep_play', None, 0, 0)
+    mci("play beep_play wait", None, 0, 0)
+    mci("close beep_play", None, 0, 0)
