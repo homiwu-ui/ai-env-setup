@@ -1,8 +1,20 @@
+import os
 import sys
 
-sys.path.insert(0, r"G:\我的雲端硬碟\AI 專項\tools\opencode-assistant")
-import speak
+BASE = r"G:\我的雲端硬碟\AI 專項\tools\opencode-assistant"
+sys.path.insert(0, BASE)
 from chat import respond
+
+QUEUE = os.path.join(BASE, "_speak_queue.txt")
+
+
+def _speak(text: str) -> None:
+    try:
+        with open(QUEUE, "a", encoding="utf-8") as f:
+            f.write(text + "\n")
+    except Exception:
+        import speak as s
+        s.speak(text)
 
 
 def main():
@@ -17,10 +29,10 @@ def main():
     else:
         reply = respond(text)
     if reply == "EXIT":
-        speak.speak("哼！那我先走啦～有事再叫我！Bye bye！")
+        _speak("哼！那我先走啦～有事再叫我！Bye bye！")
         print("EXIT")
         return
-    speak.speak(reply)
+    _speak(reply)
     print(reply)
 
 
