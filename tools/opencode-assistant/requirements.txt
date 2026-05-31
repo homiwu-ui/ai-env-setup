@@ -1,0 +1,4 @@
+edge-tts>=7.0
+SpeechRecognition>=3.0
+sounddevice>=0.5
+numpy>=1.24
