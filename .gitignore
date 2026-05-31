@@ -11,6 +11,12 @@ credentials.*
 .opencode/credentials*
 .opencode/*.env
 
+# Python
+__pycache__/
+*.pyc
+*.mp3
+*.wav
+
 # Node.js
 node_modules/
 package-lock.json
