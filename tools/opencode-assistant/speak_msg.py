@@ -1,12 +1,11 @@
-import asyncio
 import sys
 
 sys.path.insert(0, r"G:\我的雲端硬碟\AI 專項\tools\opencode-assistant")
-import voice
+import speak
 from chat import respond
 
 
-async def main():
+def main():
     args = sys.argv[1:]
     raw = False
     if "--raw" in args:
@@ -18,12 +17,12 @@ async def main():
     else:
         reply = respond(text)
     if reply == "EXIT":
-        await voice.speak("哼！那我先走啦～有事再叫我！Bye bye！")
+        speak.speak("哼！那我先走啦～有事再叫我！Bye bye！")
         print("EXIT")
         return
-    await voice.speak(reply)
+    speak.speak(reply)
     print(reply)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
