@@ -1,60 +1,15 @@
 import asyncio
 import ctypes
-import io
 import os
+import struct
+import math
 import tempfile
 import wave
 
 import edge_tts
-import numpy as np
-import sounddevice as sd
-import speech_recognition as sr
 
 EDGE_VOICE = "zh-TW-HsiaoChenNeural"
 SAPI_VOICE_NAME = "han"
-
-_sample_rate = 16000
-_channels = 1
-_dtype = np.int16
-
-
-def _save_wav_bytes(audio_data: np.ndarray) -> bytes:
-    buf = io.BytesIO()
-    with wave.open(buf, "wb") as wf:
-        wf.setnchannels(_channels)
-        wf.setsampwidth(2)
-        wf.setframerate(_sample_rate)
-        wf.writeframes(audio_data.tobytes())
-    return buf.getvalue()
-
-
-_quiet = False
-
-def listen(timeout: float = 5.0, phrase_limit: float = 8.0) -> str | None:
-    if not _quiet:
-        print("🎤 聆聽中...（說「結束」離開）", flush=True)
-    recorded = sd.rec(
-        int(_sample_rate * phrase_limit),
-        samplerate=_sample_rate,
-        channels=_channels,
-        dtype=_dtype,
-        blocking=True,
-    )
-    wav_bytes = _save_wav_bytes(recorded)
-    recognizer = sr.Recognizer()
-    with sr.AudioFile(io.BytesIO(wav_bytes)) as source:
-        audio = recognizer.record(source)
-    try:
-        text = recognizer.recognize_google(audio, language="zh-TW")
-        if not _quiet:
-            print(f"  你說：{text}", flush=True)
-        return text
-    except sr.UnknownValueError:
-        return None
-    except sr.RequestError:
-        if not _quiet:
-            print("  ⚠️ Google 語音辨識連線失敗，請檢查網路", flush=True)
-        return None
 
 
 def _play_mp3(path: str) -> None:
@@ -88,12 +43,10 @@ def _speak_sapi(text: str) -> None:
         speaker.Volume = 100
         speaker.Speak(text, 1)
     except Exception:
-        if not _quiet:
-            print(f"  🤖 {text}", flush=True)
+        print(f"  🤖 {text}", flush=True)
 
 
 def play_wake_sound() -> None:
-    import struct, math
     sr = 44100
     duration = 0.15
     freq = 880

@@ -74,7 +74,7 @@ def _handle_help() -> str:
         "  • 說「新增 MCP 名稱 指令」→ 加新的\n"
         "  • 說「我的狀態」→ 檢查整體設定\n"
         "  • 說「安裝引導」→ 帶你安裝 OpenCode\n"
-        "  • 說「結束」或「bye」→ 關閉"
+        "  • 說「結束語音」→ 關閉"
     )
 
 
@@ -130,8 +130,11 @@ def respond(text: str) -> str:
     if re.search(r"(help|說明|可以.*做|功能|你會)", t):
         return _handle_help()
 
-    if re.search(r"(結束|關閉|退出|拜拜|bye|exit|quit)", t):
+    if re.search(r"(結束語音|關閉語音|退出語音|bye|exit)", t):
         return "EXIT"
+
+    if re.search(r"(結束|關閉|退出|拜拜|quit)", t):
+        return _tsundere("說「結束語音」我才會關掉啦～")
 
     return _tsundere(
         "我不太懂你的意思耶～"
