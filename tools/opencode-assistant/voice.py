@@ -28,8 +28,11 @@ def _save_wav_bytes(audio_data: np.ndarray) -> bytes:
     return buf.getvalue()
 
 
+_quiet = False
+
 def listen(timeout: float = 5.0, phrase_limit: float = 8.0) -> str | None:
-    print("🎤 聆聽中...（說「結束」離開）", flush=True)
+    if not _quiet:
+        print("🎤 聆聽中...（說「結束」離開）", flush=True)
     recorded = sd.rec(
         int(_sample_rate * phrase_limit),
         samplerate=_sample_rate,
@@ -43,12 +46,14 @@ def listen(timeout: float = 5.0, phrase_limit: float = 8.0) -> str | None:
         audio = recognizer.record(source)
     try:
         text = recognizer.recognize_google(audio, language="zh-TW")
-        print(f"  你說：{text}", flush=True)
+        if not _quiet:
+            print(f"  你說：{text}", flush=True)
         return text
     except sr.UnknownValueError:
         return None
     except sr.RequestError:
-        print("  ⚠️ Google 語音辨識連線失敗，請檢查網路", flush=True)
+        if not _quiet:
+            print("  ⚠️ Google 語音辨識連線失敗，請檢查網路", flush=True)
         return None
 
 
@@ -83,7 +88,8 @@ def _speak_sapi(text: str) -> None:
         speaker.Volume = 100
         speaker.Speak(text, 1)
     except Exception:
-        print(f"  🤖 {text}", flush=True)
+        if not _quiet:
+            print(f"  🤖 {text}", flush=True)
 
 
 def play_wake_sound() -> None:

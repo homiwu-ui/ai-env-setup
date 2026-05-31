@@ -46,14 +46,13 @@ async def text_loop() -> None:
 
 
 def main() -> None:
-    mode = "--text" if "--text" in sys.argv else "--voice"
-    try:
-        if mode == "--text":
-            asyncio.run(text_loop())
-        else:
-            asyncio.run(voice_loop())
-    except KeyboardInterrupt:
-        print("\n👋 小婷已關閉", flush=True)
+    if "--hidden" in sys.argv:
+        voice._quiet = True
+        asyncio.run(voice_loop())
+    elif "--text" in sys.argv:
+        asyncio.run(text_loop())
+    else:
+        asyncio.run(voice_loop())
 
 
 if __name__ == "__main__":
