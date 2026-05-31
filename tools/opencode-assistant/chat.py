@@ -13,6 +13,8 @@ _tsundere_prefixes = [
     "真是拿你沒辦法～",
     "喔？你居然會問這個，",
     "嘿嘿，",
+    "小婷在此！",
+    "叫我小婷有什麼事？",
 ]
 
 _tsundere_suffixes = [
@@ -33,7 +35,7 @@ def _tsundere(text: str) -> str:
 
 
 def _greeting() -> str:
-    return _tsundere("我是你的 OpenCode 語音助手～有什麼想問的儘管說吧！")
+    return _tsundere("我是小婷，你的 OpenCode 語音助手～有什麼想問的儘管說吧！")
 
 
 def _handle_list_mcp() -> str:
@@ -83,8 +85,13 @@ def _handle_greet() -> str:
         "什麼事～我很忙的喔！",
         "喔？你來了啊，說吧說吧。",
         "嘿嘿，今天想問什麼？",
+        "小婷在這裡！有什麼吩咐？",
     ]
     return _tsundere(random.choice(greets))
+
+
+def _handle_go() -> str:
+    return "啟動語音模式！來吧，說「MCP 有誰」試試看～"
 
 
 def respond(text: str) -> str:
@@ -92,6 +99,9 @@ def respond(text: str) -> str:
 
     if not t or t in ("", "嗯", "喔"):
         return _tsundere("你到底想說什麼啦～")
+
+    if re.search(r"(小婷go|小婷 go|xiaoting go|go 小婷)", t):
+        return _handle_go()
 
     if re.search(r"(hi|hello|嗨|哈囉|你好|早安|午安|晚安)", t):
         return _handle_greet()
