@@ -29,7 +29,7 @@ def _save_wav_bytes(audio_data: np.ndarray) -> bytes:
 
 
 def listen(timeout: float = 5.0, phrase_limit: float = 8.0) -> str | None:
-    print("🎤 聆聽中..." + "（說「結束」離開）" if not None else "", flush=True)
+    print("🎤 聆聽中...（說「結束」離開）", flush=True)
     recorded = sd.rec(
         int(_sample_rate * phrase_limit),
         samplerate=_sample_rate,
@@ -54,24 +54,17 @@ def listen(timeout: float = 5.0, phrase_limit: float = 8.0) -> str | None:
 
 def _play_mp3(path: str) -> None:
     mci = ctypes.windll.winmm.mciSendStringW
-    alias = "tts_playback"
-    cmd_open = f'open "{path}" alias {alias}'
-    cmd_play = f"play {alias} wait"
-    cmd_close = f"close {alias}"
-    mci(cmd_open, None, 0, 0)
-    mci(cmd_play, None, 0, 0)
-    mci(cmd_close, None, 0, 0)
+    mci(f'open "{path}" alias tts_play', None, 0, 0)
+    mci("play tts_play wait", None, 0, 0)
+    mci("close tts_play", None, 0, 0)
 
 
-def speak(text: str) -> None:
+async def speak(text: str) -> None:
     try:
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
         communicate = edge_tts.Communicate(text, voice=EDGE_VOICE)
         with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp:
             tmp_path = tmp.name
-        loop.run_until_complete(communicate.save(tmp_path))
-        loop.close()
+        await communicate.save(tmp_path)
         _play_mp3(tmp_path)
         os.unlink(tmp_path)
     except Exception:
