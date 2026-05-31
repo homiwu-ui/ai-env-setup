@@ -3,12 +3,18 @@ import time
 import win32com.client
 
 QUEUE = os.path.join(os.path.dirname(__file__), "_speak_queue.txt")
-SAPI_VOICE = "han"
 
 speaker = win32com.client.Dispatch("SAPI.SpVoice")
-for v in speaker.GetVoices():
-    if SAPI_VOICE in v.Id.lower():
-        speaker.Voice = v
+for priority in ["hsiaochen", "hanhan"]:
+    found = None
+    for v in speaker.GetVoices():
+        vid = v.Id.lower()
+        if priority in vid:
+            found = v
+            if "native" in vid:
+                break
+    if found:
+        speaker.Voice = found
         break
 speaker.Rate = 0
 speaker.Volume = 100
@@ -26,6 +32,6 @@ while True:
                 for line in f:
                     text = line.strip()
                     if text:
-                        speaker.Speak(text, 1)
+                        speaker.Speak(text, 0)
             last_size = size
     time.sleep(0.05)

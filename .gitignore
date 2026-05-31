@@ -19,6 +19,9 @@ __pycache__/
 _history/
 _speak_queue.txt
 
+# 語音安裝包 (太大，由 install.ps1 自動下載)
+voice_packs/
+
 # Node.js
 node_modules/
 package-lock.json

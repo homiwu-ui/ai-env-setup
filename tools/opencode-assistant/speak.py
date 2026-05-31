@@ -1,18 +1,26 @@
 import sys
 import win32com.client
 
-SAPI_VOICE = "han"
+SAPI_VOICE_PRIORITY = ["hsiaochen", "hanhan"]
 
 
 def speak(text: str) -> None:
     speaker = win32com.client.Dispatch("SAPI.SpVoice")
-    for v in speaker.GetVoices():
-        if SAPI_VOICE in v.Id.lower():
-            speaker.Voice = v
+    chosen = None
+    for priority in SAPI_VOICE_PRIORITY:
+        for v in speaker.GetVoices():
+            vid = v.Id.lower()
+            if priority in vid:
+                chosen = v
+                if "native" in vid:
+                    break
+        if chosen:
             break
+    if chosen:
+        speaker.Voice = chosen
     speaker.Rate = 0
     speaker.Volume = 100
-    speaker.Speak(text, 1)
+    speaker.Speak(text, 0)
 
 
 if __name__ == "__main__":

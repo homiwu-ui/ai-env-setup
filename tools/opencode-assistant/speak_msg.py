@@ -25,43 +25,50 @@ def _speak_edge(text: str) -> None:
 def _speak_sapi(text: str) -> None:
     import win32com.client
     s = win32com.client.Dispatch("SAPI.SpVoice")
-    for v in s.GetVoices():
-        if "han" in v.Id.lower():
-            s.Voice = v
+    for priority in ["hsiaochen", "hanhan"]:
+        found = None
+        for v in s.GetVoices():
+            vid = v.Id.lower()
+            if priority in vid:
+                found = v
+                if "native" in vid:
+                    break
+        if found:
+            s.Voice = found
             break
     s.Rate = 0
     s.Volume = 100
-    s.Speak(text, 1)
+    s.Speak(text, 0)
 
 
 def _speak(text: str) -> None:
-    try:
-        _speak_edge(text)
-    except Exception:
-        _speak_sapi(text)
+    _speak_sapi(text)
 
 
 def main():
     args = sys.argv[1:]
     raw = False
-    quick = False
+    use_edge = False
     if "--raw" in args:
         raw = True
         args.remove("--raw")
-    if "--quick" in args:
-        quick = True
-        args.remove("--quick")
+    if "--edge" in args:
+        use_edge = True
+        args.remove("--edge")
     text = " ".join(args) if args else "hi"
     if raw:
         reply = text
     else:
         reply = respond(text)
     if reply == "EXIT":
-        _speak("哼！那我先走啦～有事再叫我！Bye bye！")
+        _speak_sapi("哼！那我先走啦～有事再叫我！Bye bye！")
         print("EXIT")
         return
-    if quick:
-        _speak_sapi(reply)
+    if use_edge:
+        try:
+            _speak_edge(reply)
+        except Exception:
+            _speak_sapi(reply)
     else:
         _speak(reply)
     print(reply)

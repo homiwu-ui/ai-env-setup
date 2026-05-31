@@ -9,7 +9,7 @@ import wave
 import edge_tts
 
 EDGE_VOICE = "zh-TW-HsiaoChenNeural"
-SAPI_VOICE_NAME = "han"
+SAPI_VOICE_PRIORITY = ["hsiaochen", "hanhan"]
 
 
 def _play_mp3(path: str) -> None:
@@ -35,15 +35,22 @@ def _speak_sapi(text: str) -> None:
     try:
         import win32com.client
         speaker = win32com.client.Dispatch("SAPI.SpVoice")
-        for v in speaker.GetVoices():
-            if SAPI_VOICE_NAME in v.Id.lower():
-                speaker.Voice = v
+        for priority in SAPI_VOICE_PRIORITY:
+            found = None
+            for v in speaker.GetVoices():
+                vid = v.Id.lower()
+                if priority in vid:
+                    found = v
+                    if "native" in vid:
+                        break
+            if found:
+                speaker.Voice = found
                 break
         speaker.Rate = 0
         speaker.Volume = 100
-        speaker.Speak(text, 1)
+        speaker.Speak(text, 0)
     except Exception:
-        print(f"  🤖 {text}", flush=True)
+        print(f"  [{text}]", flush=True)
 
 
 def play_wake_sound() -> None:
